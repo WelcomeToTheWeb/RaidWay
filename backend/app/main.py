@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -37,3 +38,7 @@ async def health():
 _SAMPLES_DIR = Path(__file__).resolve().parents[2] / "samples"
 if _SAMPLES_DIR.is_dir():
     app.mount("/samples", StaticFiles(directory=str(_SAMPLES_DIR)), name="samples")
+
+_STATIC_DIR = Path(os.environ.get("FRONTEND_DIST_DIR", "")) if os.environ.get("FRONTEND_DIST_DIR") else Path(__file__).resolve().parents[2] / "frontend" / "dist"
+if _STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(_STATIC_DIR), html=True), name="ui")

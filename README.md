@@ -21,7 +21,20 @@ docs/       Additional documentation
 
 ## Quickstart
 
-### 1. Backend
+### Docker (single container, UI + API)
+
+```bash
+docker compose up --build
+# or: docker build -t raid-analyst . && docker run -p 8000:8000 raid-analyst
+```
+
+Open http://localhost:8000 — the React UI, API, and sample data are all served from one container. LLM provider env vars pass through from your shell (defaults to the offline mock if unset).
+
+The image is a two-stage build: Node 22 builds the React app, and FastAPI serves the resulting `dist/` statically — no separate frontend process.
+
+### Local development
+
+#### 1. Backend
 
 ```bash
 cd backend
@@ -29,7 +42,7 @@ uv sync
 uv run uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Frontend
+#### 2. Frontend
 
 ```bash
 cd frontend
