@@ -35,10 +35,22 @@ async def health():
     return {"status": "ok", "llm": llm_mod.provider_status()}
 
 
-_SAMPLES_DIR = Path(__file__).resolve().parents[2] / "samples"
-if _SAMPLES_DIR.is_dir():
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_SAMPLE_CANDIDATES = [
+    Path(os.environ.get("SAMPLES_DIR", "")) if os.environ.get("SAMPLES_DIR") else None,
+    _REPO_ROOT / "samples",
+    Path("/app/samples"),
+]
+_SAMPLES_DIR = next((d for d in _SAMPLE_CANDIDATES if d and d.is_dir()), None)
+if _SAMPLES_DIR is not None:
     app.mount("/samples", StaticFiles(directory=str(_SAMPLES_DIR)), name="samples")
 
-_STATIC_DIR = Path(os.environ.get("FRONTEND_DIST_DIR", "")) if os.environ.get("FRONTEND_DIST_DIR") else Path(__file__).resolve().parents[2] / "frontend" / "dist"
-if _STATIC_DIR.is_dir():
+_STATIC_ENV = os.environ.get("FRONTEND_DIST_DIR", "")
+_STATIC_CANDIDATES = [
+    Path(_STATIC_ENV) if _STATIC_ENV else None,
+    _REPO_ROOT / "frontend" / "dist",
+    Path("/app/frontend_dist"),
+]
+_STATIC_DIR = next((d for d in _STATIC_CANDIDATES if d and d.is_dir()), None)
+if _STATIC_DIR is not None:
     app.mount("/", StaticFiles(directory=str(_STATIC_DIR), html=True), name="ui")

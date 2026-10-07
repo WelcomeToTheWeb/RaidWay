@@ -16,6 +16,6 @@ COPY backend/app ./app
 COPY samples ./samples
 COPY --from=frontend-build /app/dist ./frontend_dist
 ENV PATH="/app/.venv/bin:${PATH}"
-ENV FRONTEND_DIST_DIR=/app/frontend_dist
+ENV SAMPLES_DIR=/app/samples FRONTEND_DIST_DIR=/app/frontend_dist
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
